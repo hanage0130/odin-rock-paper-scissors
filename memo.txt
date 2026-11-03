@@ -1,0 +1,35 @@
+1.引き分けのときも前と同様に表示する。
+2.ログとして追記
+3.どちらが5点に到達したらボタンを無効化　リセット用のボタンを追加
+4.理解してると思う。
+
+HTMLはcontainer要素だけ追加してある状態
+
+function playGame() // ゲーム初期化用関数
+  humanScore = 0, computerScore = 0
+  ボタン表示用の要素controllerを作成
+  テキスト表示用の要素displayを作成
+  container要素を初期化
+  controller要素にrock,paper,scissorsに対応するボタンを追加。
+  それぞれのボタンにplayRound(ボタンに対応している手,getComputerChoice())を割り当てる。
+  containerにcontrollerを追加
+  containerにdisplayを追加
+  function displayUpdate(str)
+    文字列strを含むdivを結果表示用の要素displayに追加する。
+  function checkFinishedGame()
+    ゲームが終了していたら (どちらかが5点なら)
+      displayUpdate(勝った方の勝利メッセージ)
+      ボタン無効化
+      playRound()を呼ぶリセットボタンをcontrollerに追加
+  function playRound(humanChoice, computerChoice)
+    人間が勝ちなら
+      人間の得点を+1
+      displayUpdate(勝利メッセージと得点表示)
+    人間が負けなら
+      コンピューターの特典を+1
+      displayUpdate(敗北メッセージと得点表示)
+    引き分けなら
+      displayUpdate(引き分けメッセージと得点表示)
+    checkFinishedGame()
+  
+playGame()

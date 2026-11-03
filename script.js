@@ -1,63 +1,94 @@
+const choiceStr = ["rock", "paper", "scissors"];
+const win = 1,
+  draw = 0,
+  lose = -1;
+const judge = [];
+for (let i = 0; i < 3; i++) {
+  judge[i] = [];
+  for (let j = 0; j < 3; j++) {
+    if (
+      (choiceStr[i] === "paper" && choiceStr[j] === "rock") ||
+      (choiceStr[i] === "scissors" && choiceStr[j] === "paper") ||
+      (choiceStr[i] === "rock" && choiceStr[j] === "scissors")
+    ) {
+      judge[i][j] = win;
+    } else if (
+      (choiceStr[i] === "rock" && choiceStr[j] === "paper") ||
+      (choiceStr[i] === "paper" && choiceStr[j] === "scissors") ||
+      (choiceStr[i] === "scissors" && choiceStr[j] === "rock")
+    ) {
+      judge[i][j] = lose;
+    } else {
+      judge[i][j] = draw;
+    }
+  }
+}
 function getComputerChoice() {
-  const randomNumber = Math.floor(Math.random() * 3);
-  if (randomNumber === 0) {
-    return "rock";
-  } else if (randomNumber === 1) {
-    return "paper";
-  } else {
-    return "scissors";
-  }
+  return Math.floor(Math.random() * 3);
 }
-
-function getHumanChoice() {
-  let humanChoice = prompt("Input your choice");
-  if (humanChoice === null) {
-    humanChoice = "";
-  }
-  return humanChoice;
-}
-
 function capitalize(str) {
   return str.slice(0, 1).toUpperCase() + str.slice(1);
 }
 
 function playGame() {
+  const container = document.querySelector(".container");
+  container.textContent = "";
   let humanScore = 0,
     computerScore = 0;
-  function playRound(humanChoice, computerChoice) {
-    humanChoice = humanChoice.toLowerCase();
-    if (
-      (computerChoice === "rock" && humanChoice === "paper") ||
-      (computerChoice === "paper" && humanChoice === "scissors") ||
-      (computerChoice === "scissors" && humanChoice === "rock")
-    ) {
-      console.log(
-        `You win! ${capitalize(humanChoice)} beats ${capitalize(computerChoice)}`,
-      );
-      humanScore++;
-    } else if (
-      (computerChoice === "paper" && humanChoice === "rock") ||
-      (computerChoice === "scissors" && humanChoice === "paper") ||
-      (computerChoice === "rock" && humanChoice === "scissors")
-    ) {
-      console.log(
-        `You lose! ${capitalize(computerChoice)} beats ${capitalize(humanChoice)}`,
-      );
-      computerScore++;
-    } else {
-      console.log("Draw");
+  const controller = document.createElement("div");
+  const display = document.createElement("div");
+  const buttons = [];
+  for (let i = 0; i < 3; i++) {
+    buttons[i] = document.createElement("button");
+    buttons[i].className = `${choiceStr[i]}-button`;
+    buttons[i].textContent = capitalize(choiceStr[i]);
+    buttons[i].addEventListener("click", () => {
+      playRound(i, getComputerChoice());
+    });
+    controller.appendChild(buttons[i]);
+  }
+  container.appendChild(controller);
+  container.appendChild(display);
+  function displayUpdate(str) {
+    const newElement = document.createElement("div");
+    newElement.className = "message";
+    newElement.textContent = str;
+    display.appendChild(newElement);
+  }
+  function checkFinishedGame() {
+    if (Math.max(humanScore, computerScore) === 5) {
+      if (humanScore === 5) {
+        displayUpdate("You have won this game!");
+      } else {
+        displayUpdate("You have lost this game!");
+      }
+      for (let i = 0; i < 3; i++) {
+        buttons[i].disabled = true;
+      }
+      const resetButton = document.createElement("button");
+      resetButton.className = "reset-button";
+      resetButton.textContent = "Reset";
+      resetButton.addEventListener("click", () => {
+        playGame();
+      });
+      controller.appendChild(resetButton);
     }
   }
-  for (let i = 0; i < 5; i++) {
-    playRound(getHumanChoice(), getComputerChoice());
-    console.log(`${humanScore} - ${computerScore}`);
-  }
-  if (humanScore > computerScore) {
-    console.log("You have won this game!");
-  } else if (computerScore > humanScore) {
-    console.log("You have lost this game!");
-  } else {
-    console.log("This game is a draw!");
+  function playRound(humanChoice, computerChoice) {
+    if (judge[humanChoice][computerChoice] === win) {
+      humanScore++;
+      displayUpdate(
+        `You win! ${capitalize(choiceStr[humanChoice])} beats ${capitalize(choiceStr[computerChoice])}\n${humanScore} - ${computerScore}`,
+      );
+    } else if (judge[humanChoice][computerChoice] === lose) {
+      computerScore++;
+      displayUpdate(
+        `You lose! ${capitalize(choiceStr[computerChoice])} beats ${capitalize(choiceStr[humanChoice])}\n${humanScore} - ${computerScore}`,
+      );
+    } else {
+      displayUpdate(`Draw!\n${humanScore} - ${computerScore}`);
+    }
+    checkFinishedGame();
   }
 }
 
